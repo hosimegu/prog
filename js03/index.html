@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <title>Chatアプリ</title>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JS ローカルストレイジ</title>
+    <!-- reset.cssが先 -->
+    <!-- style.cssが自分で記述するcss -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- コンテンツ表示画面 -->
+    <div>
+      <div>名前: <input type="text" id="uname" /></div>
+      <div>
+        <textarea id="text" cols="30" rows="10"></textarea>
+        <button id="send">送信</button>
+      </div>
+      <div
+        id="output"
+        style="
+          overflow: scroll;
+          height: 300px;
+          border: 1px solid white;
+          width: 300px;
+          color: floralwhite;
+        "
+      ></div>
+
+      <!--/ コンテンツ表示画面 -->
+    </div>
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- JQuery -->
+
+    <!--** 以下Firebase **-->
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+https://firebase.google.com/docs/web/setup#available-libraries -->
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase-database.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+  https://firebase.google.com/docs/web/setup#available-libraries -->
+
+    <script>
+      // Your web app's Firebase configuration
+      var firebaseConfig = {
+        apiKey: "AIzaSyBdIlZ-qP7e9L4YIdFrFIn9D7dzOZBegps",
+        authDomain: "gs-chatto-01.firebaseapp.com",
+        databaseURL: "https://gs-chatto-01-default-rtdb.firebaseio.com/",
+        projectId: "gs-chatto-01",
+        storageBucket: "gs-chatto-01.appspot.com",
+        messagingSenderId: "861981056269",
+        appId: "1:861981056269:web:552009165648fab246e444",
+      };
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+
+      //データベースに接続して読み書きできるようにする
+      let ref = firebase.database().ref();
+      //送信ボタンをクリックしたら
+      //データベースにデータを送信する
+      $("#send").on("click", function () {
+        const uname = $("#uname").val();
+        const text = $("#text").val();
+        const msg = {
+          uname: uname, // uname:"hori"
+          text: text, // text:"堀です"
+        };
+        ref.push(msg);
+      });
+      //データベースに送信された時に
+      //データの更新を行う
+      ref.on("child_added", function (data) {
+        const w = data.val(); //val()を使ってデータを取ってくる
+        const k = data.key; //ユニークキーを取得
+        // v = { name: "堀", text: "はじめてのfirebase" };
+        const h = "<p>" + w.uname + "<br>" + w.text + "</p>";
+        $("#output").append(h);
+      });
+
+      $("#text").on("keydown", function (e) {
+        if (e.keyCode === 13) {
+          //時間取得
+          let $d = new Data().toLocalString({});
+          const uname = $("#uname").val();
+          const text = $("#text").val();
+          const msg = {
+            uname: uname, // uname:"hori"
+            text: text, // text:"堀です"
+            time: $d,
+          };
+          ref.push(msg);
+        }
+      });
+    </script>
+  </body>
+</html>
